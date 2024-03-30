@@ -38,14 +38,6 @@ const NoFileLoaded = memo(({ mifiLink, currentCutSeg, onClick, darkMode }: {
           <Trans><SimpleModeButton style={{ verticalAlign: 'middle' }} size={16} /> to show simple view</Trans>
         )}
       </div>
-
-      {mifiLink && typeof mifiLink === 'object' && 'loadUrl' in mifiLink && typeof mifiLink.loadUrl === 'string' && mifiLink.loadUrl ? (
-        <div style={{ position: 'relative', margin: '3vmin', width: '60vmin', height: '20vmin' }}>
-          <iframe src={`${mifiLink.loadUrl}#dark=${darkMode ? 'true' : 'false'}`} title="iframe" style={{ background: 'rgba(0,0,0,0)', border: 'none', pointerEvents: 'none', width: '100%', height: '100%', position: 'absolute' }} />
-          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
-          <div style={{ width: '100%', height: '100%', position: 'absolute', cursor: 'pointer' }} role="button" onClick={(e) => { e.stopPropagation(); if ('targetUrl' in mifiLink && typeof mifiLink.targetUrl === 'string') electron.shell.openExternal(mifiLink.targetUrl); }} />
-        </div>
-      ) : undefined}
     </div>
   );
 });
