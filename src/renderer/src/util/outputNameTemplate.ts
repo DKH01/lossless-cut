@@ -122,6 +122,8 @@ export function generateOutSegFileNames({ segments, template: desiredTemplate, f
 }) {
   function generate({ template, forceSafeOutputFileName }: { template: string, forceSafeOutputFileName: boolean }) {
     const epochMs = Date.now();
+    const hasSingleSegment = segments.length === 1;
+    const singleSegmentName = hasSingleSegment ? segments[0].name : undefined;
 
     return segments.map((segment, i) => {
       const { start, end, name = '' } = segment;
@@ -140,7 +142,7 @@ export function generateOutSegFileNames({ segments, template: desiredTemplate, f
 
       const { name: inputFileNameWithoutExt } = parsePath(filePath);
 
-      const segFileName = interpolateSegmentFileName({
+      let segFileName = interpolateSegmentFileName({
         template,
         epochMs,
         segNum,
@@ -152,6 +154,17 @@ export function generateOutSegFileNames({ segments, template: desiredTemplate, f
         cutTo: formatTimecode({ seconds: end, fileNameFriendly: true }),
         tags: Object.fromEntries(Object.entries(getSegmentTags(segment)).map(([tag, value]) => [tag, filenamifyOrNot(value)])),
       });
+
+      // Check if the single segment name already exists
+      if (hasSingleSegment && singleSegmentName && segFileName === singleSegmentName) {
+        // Add a "(1)" suffix if the single segment name already exists
+        segFileName = `${segFileName} (1)`;
+      }
+
+      // Remove "_Trimmed_{SEG_NUM}" if it only has a single segment being exported
+      if (hasSingleSegment) {
+        segFileName = segFileName.replace(`_Trimmed_${segNum}`, '');
+      }
 
       // Now split the path by its separator, so we can check the actual file name (last path seg)
       const pathSegs = segFileName.split(pathSep);
@@ -175,6 +188,7 @@ export function generateOutSegFileNames({ segments, template: desiredTemplate, f
   }
 
   return { outSegFileNames, outSegProblems };
+}
 }
 
 export type GenerateOutSegFileNames = (a: { segments?: SegmentToExport[], template: string }) => ReturnType<typeof generateOutSegFileNames>;
