@@ -45,17 +45,7 @@ const OutSegTemplateEditor = memo(({ outSegTemplate, setOutSegTemplate, generate
 
     try {
       const outSegs = generateOutSegFileNames({ template: debouncedText });
-
-      // Check if there's only one segment and the filename contains "_Trimmed_{SEG_NUM}"
-      if (outSegs.outSegFileNames.length === 1 && outSegs.outSegFileNames[0].includes('_Trimmed_{SEG_NUM}')) {
-        // Adjust the filename to remove "_Trimmed_{SEG_NUM}"
-        const adjustedFileName = outSegs.outSegFileNames[0].replace('_Trimmed_{SEG_NUM}', '');
-        setOutSegFileNames([adjustedFileName]);
-      } else {
-        // Set output filenames as usual
-        setOutSegFileNames(outSegs.outSegFileNames);
-      }
-
+      setOutSegFileNames(outSegs.outSegFileNames);
       setOutSegProblems(outSegs.outSegProblems);
       setValidText(outSegs.outSegProblems.error == null ? debouncedText : undefined);
     } catch (err) {
